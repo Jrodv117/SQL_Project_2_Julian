@@ -1,0 +1,303 @@
+QUESTION 2:
+
+SELECT RESERVATION_ID, TRIP_ID, NUM_PERSONS
+FROM jrodr113.RESERVATION
+WHERE CUSTOMER_NUM = (
+  SELECT CUSTOMER_NUM
+  FROM CUSTOMER
+  WHERE FIRST_NAME = 'Ryan' AND LAST_NAME = 'Goff'
+);
+
+OUTPUT:
+
+RESERVA    TRIP_ID NUM_PERSONS
+------- ---------- -----------
+1600004         26           4
+1600030         15           6
+
+QUESTION 3:
+
+SELECT TRIP_NAME
+FROM jrodr113.TRIP
+WHERE TRIP_ID IN (
+  SELECT TRIP_ID
+  FROM jrodr113.TRIP_GUIDES
+  WHERE GUIDE_NUM = (
+    SELECT GUIDE_NUM
+    FROM jrodr113.GUIDE
+    WHERE FIRST_NAME = 'Miles' AND LAST_NAME = 'Abrams'
+  )
+);
+
+OUTPUT:
+TRIP_NAME                                                                  
+---------------------------------------------------------------------------
+Mt Ascent North Peak                                                       
+Long Pond                                                                  
+McLennan Reservation Hike
+
+QUESTION 4:
+
+SELECT TRIP_NAME
+FROM jrodr113.TRIP
+WHERE TYPE = 'Biking'
+AND TRIP_ID IN (
+  SELECT TRIP_ID
+  FROM jrodr113.TRIP_GUIDES
+  WHERE GUIDE_NUM = (
+    SELECT GUIDE_NUM
+    FROM jrodr113.GUIDE
+    WHERE FIRST_NAME = 'Rita' AND LAST_NAME = 'Boyers'
+  )
+);
+
+
+OUTPUT:
+TRIP_NAME                                                                  
+---------------------------------------------------------------------------
+Bradbury Mountain Ride                                                     
+Cadillac Mountain Ride                                                     
+Mount Battie Ride                                                          
+Westfield River Loop
+
+QUESTION 6:
+
+SELECT RESERVATION_ID, TRIP_ID, TRIP_DATE
+FROM jrodr113.RESERVATION
+WHERE TRIP_ID IN (
+  SELECT TRIP_ID
+  FROM TRIP
+  WHERE STATE = 'ME'
+);
+
+OUTPUT:
+RESERVA    TRIP_ID TRIP_DATE
+------- ---------- ---------
+1600007         22 09-JUL-16
+1600014         12 01-OCT-16
+1600019         25 29-AUG-16
+1600019         25 29-AUG-16
+1600026         12 01-OCT-16
+1600029          4 19-SEP-16
+
+6 rows selected.
+
+QUESTION 7:
+
+SELECT RESERVATION_ID, TRIP_ID, TRIP_DATE
+FROM jrodr113.RESERVATION
+WHERE EXISTS (
+  SELECT *
+  FROM TRIP
+  WHERE TRIP_ID = RESERVATION.TRIP_ID
+  AND STATE = 'ME'
+);
+
+OUTPUT:
+
+RESERVA    TRIP_ID TRIP_DATE
+------- ---------- ---------
+1600007         22 09-JUL-16
+1600014         12 01-OCT-16
+1600019         25 29-AUG-16
+1600019         25 29-AUG-16
+1600026         12 01-OCT-16
+1600029          4 19-SEP-16
+
+6 rows selected.
+
+QUESTION 8:
+
+SELECT LAST_NAME, FIRST_NAME
+FROM jrodr113.GUIDE
+WHERE GUIDE_NUM IN (
+  SELECT GUIDE_NUM
+  FROM jrodr113.TRIP_GUIDES
+  WHERE TRIP_ID IN (
+    SELECT TRIP_ID
+    FROM jrodr113.TRIP
+    WHERE TYPE = 'Paddling'
+  )
+);
+
+OUTPUT:
+LAST_NAME       FIRST_NAME     
+--------------- ---------------
+Devon           Harley         
+Kiley           Susan          
+Stevens         Lori           
+Unser           Glory 
+
+QUESTION 10:
+SELECT T1.TRIP_ID AS TRIP_ID_1, T1.TRIP_NAME AS TRIP_NAME_1,
+       T2.TRIP_ID AS TRIP_ID_2, T2.TRIP_NAME AS TRIP_NAME_2
+FROM TRIP T1, TRIP T2
+WHERE T1.START_LOCATION = T2.START_LOCATION
+AND T1.TRIP_ID < T2.TRIP_ID
+ORDER BY T1.TRIP_ID, T2.TRIP_ID;
+
+output:
+ TRIP_ID_1 TRIP_NAME_1                                                                  TRIP_ID_2 TRIP_NAME_2                                                                
+---------- --------------------------------------------------------------------------- ---------- ---------------------------------------------------------------------------
+         9 Big Rock Cave                                                                       11 Chocorua Lake Tour                                                         
+        12 Cadillac Mountain Ride                                                              13 Cadillac Mountain                                                          
+        12 Cadillac Mountain Ride                                                              17 Huguenot Head Hike                                                         
+        12 Cadillac Mountain Ride                                                              37 Seal Beach Harbor                                                          
+        13 Cadillac Mountain                                                                   17 Huguenot Head Hike                                                         
+        13 Cadillac Mountain                                                                   37 Seal Beach Harbor                                                          
+        17 Huguenot Head Hike                                                                  37 Seal Beach Harbor                                                          
+
+7 rows selected. 
+QUESTION 11:
+
+SELECT TRIP.TRIP_NAME
+FROM jrodr113.RESERVATION
+JOIN TRIP ON RESERVATION.TRIP_ID = TRIP.TRIP_ID
+WHERE TRIP.TYPE = 'Hiking'
+ORDER BY TRIP.TRIP_NAME ASC;
+
+OUTPUT:
+SELECT TRIP.TRIP_NAME
+FROM jrodr113.RESERVATION
+JOIN TRIP ON RESERVATION.TRIP_ID = TRIP.TRIP_ID
+WHERE TRIP.TYPE = 'Hiking'
+ORDER BY TRIP.TRIP_NAME ASC;
+
+QUESTION 12:
+
+SELECT DISTINCT CUSTOMER.CUSTOMER_NUM, CUSTOMER.LAST_NAME, CUSTOMER.FIRST_NAME
+FROM jrodr113.CUSTOMER
+LEFT JOIN RESERVATION ON CUSTOMER.CUSTOMER_NUM = RESERVATION.CUSTOMER_NUM
+WHERE CUSTOMER.STATE = 'NJ' OR RESERVATION.RESERVATION_ID IS NOT NULL
+ORDER BY CUSTOMER.LAST_NAME, CUSTOMER.FIRST_NAME;
+
+
+OUTPUT:
+CUST LAST_NAME                      FIRST_NAME                    
+---- ------------------------------ ------------------------------
+121  Bretton-Borak                  Siam                          
+126  Brown                          Brianne                       
+124  Busa                           Karen                         
+109  Caron                          Jean Luc                      
+119  Chau                           Clement                       
+120  Gernowski                      Sadie                         
+104  Goff                           Ryan                          
+122  Hefferson                      Orlauh                        
+112  Jones                          Laura                         
+103  Kasuma                         Sujata                        
+107  Marchand                       Quinn                         
+
+CUST LAST_NAME                      FIRST_NAME                    
+---- ------------------------------ ------------------------------
+105  Mclean                         Kyle                          
+106  Morontoia                      Joseph                        
+116  Murakami                       Iris                          
+101  Northfold                      Liam                          
+102  Ocean                          Arnold                        
+125  Peterson                       Becca                         
+108  Rulf                           Uschi                         
+115  Vaccari                        Adam                          
+
+19 rows selected.
+
+QUESTION 14:
+SELECT TRIP.TRIP_ID, TRIP.TRIP_NAME
+FROM jrodr113.TRIP
+WHERE TRIP.MAX_GRP_SIZE > (
+  SELECT MAX(TRIP.MAX_GRP_SIZE)
+  FROM jrodr113.TRIP
+  WHERE TRIP.TYPE = 'Hiking'
+);
+
+OUTPUT:
+   TRIP_ID TRIP_NAME                                                                  
+---------- ---------------------------------------------------------------------------
+        38 Sawyer River Ride 
+
+QUESTION 15:
+
+SELECT TRIP.TRIP_ID, TRIP.TRIP_NAME
+FROM jrodr113.TRIP
+WHERE TRIP.MAX_GRP_SIZE > (
+  SELECT MAX(TRIP.MAX_GRP_SIZE)
+  FROM jrodr113.TRIP
+  WHERE TRIP.TYPE = 'Biking'
+);
+
+OUTPUT:
+no rows selected
+
+QUESTION 16:
+SELECT TRIP.TRIP_ID, TRIP.TRIP_NAME, RESERVATION.RESERVATION_ID
+FROM jrodr113.TRIP
+LEFT JOIN RESERVATION ON TRIP.TRIP_ID = RESERVATION.TRIP_ID
+ORDER BY TRIP.TRIP_ID;
+
+OUTPUT:
+
+   TRIP_ID TRIP_NAME                                                                   RESERVA
+---------- --------------------------------------------------------------------------- -------
+         1 Arethusa Falls                                                              1600012
+         2 Mt Ascent North Peak                                                        1600010
+         3 Mt Ascutney - West Peak                                                     1600011
+         4 Bradbury Mountain Ride                                                      1600029
+         5 Baldpate Mountain                                                                  
+         6 Blueberry Mountain                                                                 
+         7 Bloomfield - Maidstone                                                             
+         8 Black Pond                                                                  1600013
+         9 Big Rock Cave                                                                      
+        10 Mt. Cardigan - Firescrew                                                    1600015
+        11 Chocorua Lake Tour                                                          1600016
+
+   TRIP_ID TRIP_NAME                                                                   RESERVA
+---------- --------------------------------------------------------------------------- -------
+        12 Cadillac Mountain Ride                                                      1600014
+        12 Cadillac Mountain Ride                                                      1600026
+        13 Cadillac Mountain                                                                  
+        14 Cannon Min                                                                         
+        15 Crawford Path Presidentials Hike                                            1600030
+        16 Cherry Pond                                                                        
+        17 Huguenot Head Hike                                                                 
+        18 Low Bald Spot Hike                                                                 
+        19 Mason's Farm                                                                       
+        20 Lake Mephreragog Tour                                                              
+        21 Long Pond                                                                   1600022
+
+   TRIP_ID TRIP_NAME                                                                   RESERVA
+---------- --------------------------------------------------------------------------- -------
+        21 Long Pond                                                                   1600002
+        22 Long Pond Tour                                                              1600007
+        23 Lower Pond Tour                                                                    
+        24 Mt Adams                                                                           
+        25 Mount Battie Ride                                                           1600019
+        25 Mount Battie Ride                                                           1600019
+        26 Mount Cardigan Hike                                                         1600004
+        27 Mt. Chocora                                                                        
+        28 Mount Garfield Hike                                                         1600003
+        28 Mount Garfield Hike                                                         1600008
+        29 Metacomet-Monadnock Trail Hike                                                     
+
+   TRIP_ID TRIP_NAME                                                                   RESERVA
+---------- --------------------------------------------------------------------------- -------
+        30 McLennan Reservation Hike                                                          
+        31 Missisquot River - VT                                                              
+        32 Northern Forest Cano Trail                                                  1600006
+        32 Northern Forest Cano Trail                                                  1600021
+        33 Park Loop Ride                                                                     
+        34 Pontook Reservoir Tour                                                             
+        35 Pisgah State Park Ride                                                             
+        36 Pondicherry Trail Ride                                                             
+        37 Seal Beach Harbor                                                                  
+        38 Sawyer River Ride                                                           1600018
+        38 Sawyer River Ride                                                           1600009
+
+   TRIP_ID TRIP_NAME                                                                   RESERVA
+---------- --------------------------------------------------------------------------- -------
+        38 Sawyer River Ride                                                           1600025
+        38 Sawyer River Ride                                                           1600024
+        39 Welch and Dickey Mountains hike                                             1600005
+        39 Welch and Dickey Mountains hike                                             1600017
+        40 Wachusett Mountain                                                          1600001
+        41 Westfield River Loop                                                               
+
+50 rows selected. 
